@@ -5,8 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
 import { Send, User, MessageCircle, MoreHorizontal, Loader2, AlertCircle } from 'lucide-react';
-import * as RussianCensor from 'russian-bad-word-censor';
-const RuCensor = (RussianCensor as any).Censor || (RussianCensor as any).RuCensor || (RussianCensor as any).default;
 
 interface CommentSectionProps {
   postId: string;
@@ -20,7 +18,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
   const [error, setError] = useState<string | null>(null);
   const [fetching, setFetching] = useState(true);
 
-  const ruCensor = RuCensor ? new RuCensor() : null;
+
 
   useEffect(() => {
     fetchComments();
@@ -45,15 +43,9 @@ export default function CommentSection({ postId }: CommentSectionProps) {
     e.preventDefault();
     if (!user || !newComment.trim()) return;
 
-    let isProfane = false;
-    if (ruCensor) {
-      isProfane = ruCensor.isProfane(newComment);
-    } else {
-      const lowerText = newComment.toLowerCase();
-      ['сука', 'бля', 'хуй', 'пиздец', 'ебать'].forEach(word => {
-        if (lowerText.includes(word)) isProfane = true;
-      });
-    }
+    const lowerText = newComment.toLowerCase();
+    const badWords = ['сука', 'бля', 'хуй', 'пиздец', 'ебать'];
+    const isProfane = badWords.some(word => lowerText.includes(word));
 
     if (isProfane) {
       setError('Пожалуйста, будьте вежливы. Матерные слова запрещены!');

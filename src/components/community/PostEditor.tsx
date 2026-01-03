@@ -6,7 +6,6 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
 import { Send, Image as ImageIcon, Loader2, AlertCircle } from 'lucide-react';
 const Filter = require('bad-words');
-import { RuCensor } from 'russian-bad-word-censor';
 
 interface PostEditorProps {
   onPostCreated: () => void;
@@ -20,15 +19,16 @@ export default function PostEditor({ onPostCreated }: PostEditorProps) {
   const [error, setError] = useState<string | null>(null);
 
   const filter = new Filter();
-  const ruCensor = new RuCensor();
   
   const validateText = (text: string) => {
     if (!text) return false;
     // English filtering
     const isProfaneEn = filter.isProfane(text);
     
-    // Russian filtering
-    const isProfaneRu = ruCensor.isProfane(text);
+    // Russian filtering - fallback to simple check for common roots
+    const lowerText = text.toLowerCase();
+    const badWords = ['сука', 'бля', 'хуй', 'пиздец', 'ебать'];
+    const isProfaneRu = badWords.some(word => lowerText.includes(word));
 
     return isProfaneEn || isProfaneRu;
   };
