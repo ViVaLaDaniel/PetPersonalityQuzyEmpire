@@ -19,8 +19,8 @@ export default function Navbar() {
             <div className="p-2 bg-blue-500 rounded-lg group-hover:rotate-12 transition-transform shadow-[0_0_15px_rgba(59,130,246,0.5)]">
               <PawPrint className="text-white" size={24} />
             </div>
-            <span className="text-xl font-black text-white tracking-tighter">
-              Paw<span className="text-blue-400">Persona</span>
+            <span className="text-xl font-black text-white tracking-tighter" translate="no">
+              Paw<span className="text-blue-400">Persona</span> 
             </span>
           </Link>
 
