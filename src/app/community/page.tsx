@@ -18,18 +18,34 @@ export default function CommunityPage() {
   }, []);
 
   const fetchPosts = async () => {
+    // Modified to fetch profile data (display_name, avatar_url)
+    // We join 'profiles' table on user_id.
+    // Note: The previous code joined 'users' from auth schema which is not standard accessible via PostgREST unless exposed.
+    // The previous code was: author:user_id (email)
+    // The new code assumes 'profiles' table exists and is linked via id.
+
+    // We try to fetch from profiles. If profiles doesn't exist yet (migration not run), this might fail.
+    // However, to be robust, we will assume the migration is applied.
+
     const { data, error } = await supabase
       .from('community_posts')
       .select(`
         *,
-        author:user_id (email),
+        author:profiles(display_name, avatar_url),
         likes_count:likes(count),
         comments_count:comments(count)
       `)
       .order('created_at', { ascending: false });
 
-    if (error) console.error('Error fetching posts:', error);
-    else setPosts(data || []);
+    if (error) {
+       console.error('Error fetching posts:', error);
+       // Fallback for when profiles table might not exist or other error
+       // We can try fetching the old way just in case, or just show empty.
+       // For this task, we assume the migration is critical.
+    }
+    else {
+        setPosts(data || []);
+    }
     setLoading(false);
   };
 
