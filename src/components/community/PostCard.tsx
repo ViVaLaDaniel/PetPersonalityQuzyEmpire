@@ -11,7 +11,14 @@ interface PostCardProps {
 }
 
 export default function PostCard({ post, onUpdate }: PostCardProps) {
-  const authorName = post.author?.email?.split('@')[0] || 'Anonymous';
+  // Use profile data if available, fallback to email, then Anonymous
+  // The query structure is now expected to be:
+  // post.author (which is the profile object joined by user_id)
+  // OR post.user_email (if we joined that way, but let's stick to profile)
+
+  // 'author' is the joined profile data.
+  const displayName = post.author?.display_name || 'Anonymous';
+  const avatarUrl = post.author?.avatar_url;
   
   return (
     <motion.div 
@@ -22,11 +29,15 @@ export default function PostCard({ post, onUpdate }: PostCardProps) {
       {/* Post Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-600/20 flex items-center justify-center border border-white/10 group-hover:scale-110 transition-transform">
-            <User className="text-blue-400" size={24} />
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-600/20 flex items-center justify-center border border-white/10 group-hover:scale-110 transition-transform overflow-hidden relative">
+            {avatarUrl ? (
+                <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" />
+            ) : (
+                <User className="text-blue-400" size={24} />
+            )}
           </div>
           <div>
-            <h4 className="text-white font-bold text-sm tracking-tight">{authorName}</h4>
+            <h4 className="text-white font-bold text-sm tracking-tight">{displayName}</h4>
             <span className="text-gray-500 text-[10px] uppercase font-black tracking-widest">Empire Resident</span>
           </div>
         </div>
