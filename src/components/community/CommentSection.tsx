@@ -44,7 +44,10 @@ export default function CommentSection({ postId }: CommentSectionProps) {
     if (!user || !newComment.trim()) return;
 
     const lowerText = newComment.toLowerCase();
-    const badWords = ['сука', 'бля', 'хуй', 'пиздец', 'ебать'];
+    const badWords = [
+      'сука', 'бля', 'хуй', 'пиздец', 'ебать', 'гондон', 'залупа', 
+      'пидор', 'мразь', 'шлюха', 'курва', 'отсоси'
+    ];
     const isProfane = badWords.some(word => lowerText.includes(word));
 
     if (isProfane) {

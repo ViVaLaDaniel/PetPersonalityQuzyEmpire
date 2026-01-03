@@ -8,7 +8,7 @@ import { useProfile } from '@/hooks/useProfile';
 import { Send, Image as ImageIcon, Loader2, AlertCircle } from 'lucide-react';
 import { createPostSchema } from '@/lib/validation';
 import { z, ZodError } from 'zod';
-const Filter = require('bad-words');
+import { Filter } from 'bad-words';
 
 interface PostEditorProps {
   onPostCreated: () => void;
@@ -22,14 +22,28 @@ export default function PostEditor({ onPostCreated }: PostEditorProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const filter = new Filter();
-  
   const validateProfanity = (text: string) => {
     if (!text) return false;
-    const isProfaneEn = filter.isProfane(text);
+    
+    let isProfaneEn = false;
+    try {
+      const filter = new Filter();
+      isProfaneEn = filter.isProfane(text);
+    } catch (e) {
+      console.warn('Filter check failed', e);
+      // Basic fallback
+      const enBadWords = ['fuck', 'shit', 'asshole', 'bitch'];
+      isProfaneEn = enBadWords.some(word => text.toLowerCase().includes(word));
+    }
+    
+    // Russian filtering - even more comprehensive protection!
     const lowerText = text.toLowerCase();
-    const badWords = ['сука', 'бля', 'хуй', 'пиздец', 'ебать'];
+    const badWords = [
+      'сука', 'бля', 'хуй', 'пиздец', 'ебать', 'гондон', 'залупа', 
+      'пидор', 'мразь', 'шлюха', 'курва', 'отсоси'
+    ];
     const isProfaneRu = badWords.some(word => lowerText.includes(word));
+
     return isProfaneEn || isProfaneRu;
   };
 
@@ -44,7 +58,7 @@ export default function PostEditor({ onPostCreated }: PostEditorProps) {
       createPostSchema.parse({ title, content });
     } catch (err) {
       if (err instanceof ZodError) {
-        setError((err as any).errors[0].message);
+        setError(err.errors[0].message);
         return;
       }
     }

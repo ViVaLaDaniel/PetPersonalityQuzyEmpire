@@ -70,7 +70,7 @@ export default function PostCard({ post, onUpdate }: PostCardProps) {
 
         <div className="ml-auto flex items-center gap-4">
           <span className="text-[10px] font-black text-gray-700 uppercase tracking-widest">
-            {new Date(post.created_at).toLocaleDateString()}
+            {new Date(post.created_at).toLocaleDateString('en-GB')}
           </span>
           <button className="text-gray-500 hover:text-white transition-colors">
             <Share2 size={18} />
