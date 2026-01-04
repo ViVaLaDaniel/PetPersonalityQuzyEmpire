@@ -1,8 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Twitter, Facebook, Send, Copy, Check } from 'lucide-react';
-import { useState } from 'react';
+import { Share2, Twitter, Facebook, Link as LinkIcon } from 'lucide-react';
 
 interface SocialShareProps {
   title: string;
@@ -11,62 +10,48 @@ interface SocialShareProps {
 }
 
 export default function SocialShare({ title, url, result }: SocialShareProps) {
-  const [copied, setCopied] = useState(false);
+  const shareText = `I got "${result}" on the ${title} quiz! Discover your inner animal:`;
   
-  const encodedText = encodeURIComponent(`I'm a ${result}! 🐾 I just took the ${title} on PawPersona. Check yours here:`);
-  const encodedUrl = encodeURIComponent(url);
-
-  const shareLinks = [
-    {
-      name: 'Twitter',
-      icon: <Twitter size={20} fill="currentColor" />,
-      url: `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`,
-      color: 'bg-[#1DA1F2] hover:bg-[#1a91da]'
-    },
-    {
-      name: 'Facebook',
-      icon: <Facebook size={20} fill="currentColor" />,
-      url: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
-      color: 'bg-[#1877F2] hover:bg-[#166fe5]'
-    },
-    {
-      name: 'Telegram',
-      icon: <Send size={20} fill="currentColor" />,
-      url: `https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`,
-      color: 'bg-[#0088cc] hover:bg-[#0077b5]'
-    }
-  ];
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(`${title}: I'm a ${result}! Take the quiz: ${url}`);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(url);
+    alert('Link copied to clipboard!');
   };
 
   return (
-    <div className="flex flex-col items-center gap-4 w-full">
-      <p className="text-gray-400 text-sm font-medium uppercase tracking-widest">Share Your Personality</p>
-      <div className="flex flex-wrap justify-center gap-3">
-        {shareLinks.map((link) => (
-          <a
-            key={link.name}
-            href={link.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`${link.color} text-white p-3 rounded-xl transition-all transform hover:scale-110 active:scale-95 shadow-lg flex items-center justify-center`}
-            title={`Share on ${link.name}`}
-          >
-            {link.icon}
-          </a>
-        ))}
-        <button
-          onClick={copyToClipboard}
-          className="bg-white/10 hover:bg-white/20 text-white p-3 rounded-xl transition-all transform hover:scale-110 active:scale-95 border border-white/20 flex items-center justify-center"
-          title="Copy Link"
+    <div className="flex flex-col items-center gap-6">
+      <h4 className="text-white text-sm font-bold uppercase tracking-widest">Share Your Result</h4>
+
+      <div className="flex gap-4">
+        {/* Twitter Share */}
+        <a
+          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-4 bg-[#1DA1F2]/20 hover:bg-[#1DA1F2] text-[#1DA1F2] hover:text-white rounded-2xl transition-all transform hover:scale-110"
         >
-          {copied ? <Check className="text-green-400" size={20} /> : <Copy size={20} />}
+          <Twitter size={24} fill="currentColor" />
+        </a>
+
+        {/* Facebook Share */}
+        <a
+          href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-4 bg-[#4267B2]/20 hover:bg-[#4267B2] text-[#4267B2] hover:text-white rounded-2xl transition-all transform hover:scale-110"
+        >
+          <Facebook size={24} fill="currentColor" />
+        </a>
+
+        {/* Copy Link */}
+        <button
+          onClick={handleCopyLink}
+          className="p-4 bg-white/10 hover:bg-white/20 text-white rounded-2xl transition-all transform hover:scale-110"
+        >
+          <LinkIcon size={24} />
         </button>
       </div>
+
+      <p className="text-gray-500 text-xs">Share with friends to compare personalities!</p>
     </div>
   );
 }

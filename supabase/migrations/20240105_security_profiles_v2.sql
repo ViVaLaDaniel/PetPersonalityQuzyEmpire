@@ -62,6 +62,9 @@ ALTER TABLE community_posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE community_posts
 DROP CONSTRAINT IF EXISTS community_posts_user_id_fkey;
 
+-- Ensure image_url column exists
+ALTER TABLE community_posts ADD COLUMN IF NOT EXISTS image_url TEXT;
+
 ALTER TABLE community_posts
 ADD CONSTRAINT community_posts_user_id_profiles_fkey
 FOREIGN KEY (user_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
