@@ -1,12 +1,12 @@
 'use client';
 
 import React from 'react';
-import QuizEngine from '@/components/quiz/QuizEngine';
+import QuizContainer from '@/components/quiz/QuizContainer';
 import BlogCard from '@/components/layout/BlogCard';
 import { mockDogQuiz } from '@/lib/mock-data';
 import { blogPosts } from '@/lib/blog-data';
 import { motion } from 'framer-motion';
-import { Sparkles, TrendingUp, Users, BookOpen, ChevronRight } from 'lucide-react';
+import { Sparkles, TrendingUp, Users, BookOpen, ChevronRight, Crown } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -64,7 +64,7 @@ export default function Home() {
             <div className="h-1.5 w-24 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto rounded-full mt-6" />
           </div>
 
-          <QuizEngine quiz={mockDogQuiz} />
+          <QuizContainer quiz={mockDogQuiz} />
         </motion.div>
       </section>
 
@@ -115,10 +115,16 @@ export default function Home() {
             <h3 className="text-4xl font-black text-white mb-2 tracking-tighter uppercase italic">Trending Quizzes</h3>
             <p className="text-gray-500 font-medium">Updated every hour based on social mentions.</p>
           </div>
-          <button className="text-blue-400 font-bold hover:text-blue-300 transition-colors flex items-center gap-2 group">
-            All Quizzes 
-            <ChevronRight className="group-hover:translate-x-1 transition-transform" />
-          </button>
+          <div className="flex gap-6">
+            <a href="/premium" className="text-yellow-500 font-bold hover:text-yellow-400 transition-colors flex items-center gap-2 group">
+              <Crown size={16} />
+              Premium Plans
+            </a>
+            <button className="text-blue-400 font-bold hover:text-blue-300 transition-colors flex items-center gap-2 group">
+              All Quizzes 
+              <ChevronRight className="group-hover:translate-x-1 transition-transform" />
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4">

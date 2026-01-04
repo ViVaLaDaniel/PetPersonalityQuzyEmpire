@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useQuiz } from '@/hooks/useQuiz';
-import QuizEngine from '@/components/quiz/QuizEngine';
+import QuizContainer from '@/components/quiz/QuizContainer';
 import { motion } from 'framer-motion';
 import { useParams } from 'next/navigation';
 import { Loader2, AlertCircle } from 'lucide-react';
@@ -57,7 +57,7 @@ export default function QuizPage() {
           </p>
         </div>
 
-        <QuizEngine quiz={quiz} />
+        <QuizContainer quiz={quiz} />
       </motion.div>
     </div>
   );
