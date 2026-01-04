@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     const subscriptionId = session.subscription;
     const customerId = session.customer;
 
-    const subscription = await stripe.subscriptions.retrieve(subscriptionId) as Stripe.Subscription;
+    const subscription: any = await stripe.subscriptions.retrieve(subscriptionId);
 
     await supabase
       .from('premium_subscriptions')
