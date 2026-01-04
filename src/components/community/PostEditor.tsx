@@ -5,7 +5,8 @@ import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
-import { Send, Image as ImageIcon, Loader2, AlertCircle } from 'lucide-react';
+import { useUpload } from '@/hooks/useUpload';
+import { Send, Image as ImageIcon, Loader2, AlertCircle, X } from 'lucide-react';
 import { createPostSchema } from '@/lib/validation';
 import { z, ZodError } from 'zod';
 import { Filter } from 'bad-words';
@@ -17,8 +18,11 @@ interface PostEditorProps {
 export default function PostEditor({ onPostCreated }: PostEditorProps) {
   const { user } = useAuth();
   const { profile } = useProfile();
+  const { uploadImage, uploading: imageUploading } = useUpload();
+
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [postImageUrl, setPostImageUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,6 +51,19 @@ export default function PostEditor({ onPostCreated }: PostEditorProps) {
     return isProfaneEn || isProfaneRu;
   };
 
+  const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Check if user has uploaded an image
+    const url = await uploadImage(file, 'posts');
+    if (url) {
+      setPostImageUrl(url);
+    } else {
+        setError("Failed to upload image.");
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
@@ -55,7 +72,7 @@ export default function PostEditor({ onPostCreated }: PostEditorProps) {
 
     // 1. Zod Validation
     try {
-      createPostSchema.parse({ title, content });
+      createPostSchema.parse({ title, content, image_url: postImageUrl });
     } catch (err) {
       if (err instanceof ZodError) {
         setError(err.issues[0].message);
@@ -76,7 +93,8 @@ export default function PostEditor({ onPostCreated }: PostEditorProps) {
       .insert({
         user_id: user.id,
         title,
-        content
+        content,
+        image_url: postImageUrl
       });
 
     if (postError) {
@@ -84,6 +102,7 @@ export default function PostEditor({ onPostCreated }: PostEditorProps) {
     } else {
       setTitle('');
       setContent('');
+      setPostImageUrl('');
       onPostCreated();
     }
     setLoading(false);
@@ -130,6 +149,20 @@ export default function PostEditor({ onPostCreated }: PostEditorProps) {
           disabled={loading}
         />
 
+        {/* Image Preview */}
+        {postImageUrl && (
+            <div className="relative w-full h-48 rounded-xl overflow-hidden bg-black/20 border border-white/10">
+                <img src={postImageUrl} alt="Preview" className="w-full h-full object-cover" />
+                <button
+                    type="button"
+                    onClick={() => setPostImageUrl('')}
+                    className="absolute top-2 right-2 p-1 bg-black/50 rounded-full text-white hover:bg-red-500 transition-colors"
+                >
+                    <X size={16} />
+                </button>
+            </div>
+        )}
+
         {error && (
           <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/20 p-4 rounded-xl text-red-400 text-xs font-bold animate-shake">
             <AlertCircle size={16} />
@@ -138,14 +171,21 @@ export default function PostEditor({ onPostCreated }: PostEditorProps) {
         )}
 
         <div className="flex items-center justify-between pt-2">
-          <button type="button" className="flex items-center gap-2 text-gray-500 hover:text-blue-400 text-xs font-black uppercase tracking-widest transition-colors">
-            <ImageIcon size={18} />
-            Add Image
-          </button>
+          <label className={`flex items-center gap-2 text-gray-500 hover:text-blue-400 text-xs font-black uppercase tracking-widest transition-colors cursor-pointer ${imageUploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+            {imageUploading ? <Loader2 size={18} className="animate-spin" /> : <ImageIcon size={18} />}
+            {imageUploading ? 'Uploading...' : 'Add Image'}
+            <input
+                type="file"
+                className="hidden"
+                accept="image/*"
+                onChange={handleImageSelect}
+                disabled={imageUploading || loading}
+            />
+          </label>
           
           <button 
             type="submit"
-            disabled={loading || !title || !content}
+            disabled={loading || imageUploading || !title || !content}
             className="flex items-center gap-3 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-blue-500/30"
           >
             {loading ? <Loader2 className="animate-spin" size={18} /> : <Send size={18} />}

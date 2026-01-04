@@ -51,9 +51,19 @@ export default function PostCard({ post, onUpdate }: PostCardProps) {
         <h3 className="text-2xl font-black text-white italic tracking-tighter mb-4 group-hover/content:text-blue-400 transition-colors">
           {post.title}
         </h3>
-        <p className="text-gray-400 text-sm leading-relaxed font-medium line-clamp-3">
+        <p className="text-gray-400 text-sm leading-relaxed font-medium line-clamp-3 mb-4">
           {post.content}
         </p>
+
+        {post.image_url && (
+          <div className="w-full h-64 rounded-xl overflow-hidden mb-4 border border-white/10 relative">
+            <img
+              src={post.image_url}
+              alt={post.title}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover/content:scale-105"
+            />
+          </div>
+        )}
       </Link>
 
       {/* Post Actions */}
