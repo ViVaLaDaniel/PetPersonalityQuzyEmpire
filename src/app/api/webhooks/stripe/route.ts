@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import Stripe from 'stripe';
 import { stripe } from '@/lib/stripe/config';
 import { createClient } from '@/lib/supabase/server';
 import { headers } from 'next/headers';
@@ -27,7 +28,7 @@ export async function POST(req: NextRequest) {
     const subscriptionId = session.subscription;
     const customerId = session.customer;
 
-    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+    const subscription = await stripe.subscriptions.retrieve(subscriptionId) as Stripe.Subscription;
 
     await supabase
       .from('premium_subscriptions')
